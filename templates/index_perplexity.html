@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brand Analysis Dashboard</title>
+
+    <!-- 3rd‑party CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        /* ---------- Global ---------- */
+        body { background:#fff; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; }
+        * { box-sizing:border-box; }
+
+        /* ---------- Layout helpers ---------- */
+        .scroll-y { overflow-y:auto; scrollbar-width:thin; }
+        .scroll-y::-webkit-scrollbar { width:6px; }
+        .scroll-y::-webkit-scrollbar-thumb { background:#888; border-radius:3px; }
+        .scroll-y::-webkit-scrollbar-thumb:hover { background:#555; }
+
+        /* ---------- Header ---------- */
+        .dashboard-header { padding:1rem; border-bottom:1px solid #e9ecef; }
+
+        /* ---------- Filters ---------- */
+        .filters { display:flex; gap:1rem; padding:1rem; border-bottom:1px solid #e9ecef; }
+        .filter-button {
+            display:inline-flex;
+            align-items:center;
+            gap:0.5rem;
+            padding:0.5rem 1rem;
+            border:1px solid #e9ecef;
+            border-radius:4px;
+            background:#fff;
+            color:#495057;
+            cursor:pointer;
+            position:relative;
+            user-select:none;
+        }
+        .filter-button:focus-visible { outline:2px solid #2684ff; outline-offset:2px; }
+
+        /* ---------- Dropdown checklist ---------- */
+        .dropdown-checklist {
+            position:absolute; top:calc(100% + 4px); left:0;
+            width:220px; max-height:240px;
+            border:1px solid #e9ecef; border-radius:4px;
+            background:#fff; box-shadow:0 4px 8px rgba(0,0,0,.05);
+            padding:0.5rem; display:none;
+        }
+        .dropdown-checklist.show { display:block; }
+        .dropdown-checklist.scroll-y { overscroll-behavior:contain; }
+        .checklist-item { display:flex; align-items:center; gap:0.35rem; margin:0.15rem 0; font-size:.9rem; }
+        .checklist-item.disabled { opacity:.55; }
+
+        /* ---------- Card container ---------- */
+        .main-chart {
+            padding:1.5rem; background:#fff; border-radius:8px;
+            box-shadow:0 1px 3px rgba(0,0,0,.1); margin-bottom:1.5rem;
+        }
+        .chart-header { display:flex; justify-content:space-between; margin-bottom:1rem; padding:0 0.5rem; }
+        .chart-container { height:400px; position:relative; margin:20px 0; }
+
+        /* ---------- Rankings table ---------- */
+        .rankings-table { background:#fff; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,.1); display:flex; flex-direction:column; height:450px; }
+        .rankings-table .table-header,
+        .prompts-table .table-header { display:grid; grid-template-columns:50px 1fr 100px; padding:12px 16px; background:#f8f9fa; border-bottom:1px solid #dee2e6; font-weight:500; color:#6c757d; position:sticky; top:0; z-index:1; }
+        .rankings-table .table-body,
+        .prompts-table .table-body { flex:1; height:400px; overflow-y:auto; }
+        .table-row { display:grid; grid-template-columns:50px 1fr 100px; padding:12px 16px; border-bottom:1px solid #dee2e6; align-items:center; height:50px; }
+        .table-row:hover { background:#f8f9fa; }
+        .rank-cell { color:#6c757d; font-weight:500; }
+        .brand-cell { display:flex; align-items:center; gap:12px; }
+        .brand-logo { width:24px; height:24px; display:flex; align-items:center; justify-content:center; }
+
+        /* ---------- Prompts ---------- */
+        .prompts-table { display:flex; flex-direction:column; height:450px; }
+        .prompts-table .table-row { cursor:pointer; }
+        .response-cell { background:#f8f9fa; border-bottom:1px solid #dee2e6; }
+        .response-content { padding:16px; font-size:.9em; color:#495057; white-space:pre-line; }
+        .fa-chevron-down { transition:transform .2s; }
+        .prompt-row[aria-expanded="true"] .fa-chevron-down { transform:rotate(180deg); }
+
+        /* ---------- Utility ---------- */
+        .all-data-btn { padding:12px; width:100%; border:none; background:#f8f9fa; color:#6c757d; font-weight:500; transition:background-color .2s; }
+        .all-data-btn:hover { background:#e9ecef; }
+
+        .sources-list {
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            margin: 8px 0;
+        }
+        .source-item {
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .source-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        .citation-text {
+            font-size: 0.9em;
+            color: #6c757d;
+            margin-top: 4px;
+        }
+        .response-text {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #e9ecef;
+        }
+    </style>
+</head>
+<body>
+    <!-- ---------- Page Header ---------- -->
+    <div class="dashboard-header"><h1>Brand Analysis Dashboard</h1></div>
+
+    <!-- ---------- Filters ---------- -->
+    <div class="filters">
+        <div class="filter-button" id="dateRange" tabindex="0">
+            <i class="fas fa-calendar"></i>
+            Last 30&nbsp;days
+        </div>
+
+        <div class="filter-button" id="brandFilter" tabindex="0">
+            <i class="fas fa-filter"></i>
+            All Brands
+            <div class="dropdown-checklist scroll-y" id="brandChecklist">
+                <!-- Brands injected here via JS -->
+            </div>
+        </div>
+
+        <div class="filter-button" id="modelFilter" tabindex="0">
+            <i class="fas fa-robot"></i>
+            AI Models
+            <div class="dropdown-checklist scroll-y" id="modelChecklist">
+                <label class="checklist-item">
+                    <input type="checkbox" id="model_mistral" value="mistral" checked disabled>
+                    Mistral AI <i class="fas fa-check text-success"></i>
+                </label>
+                <label class="checklist-item disabled">
+                    <input type="checkbox" id="model_chatgpt" value="chatgpt" disabled>
+                    ChatGPT <i class="fas fa-clock text-muted"></i>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- ---------- Main content ---------- -->
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="main-chart">
+                    <div class="chart-header"><h6>Brand Visibility</h6></div>
+                    <div class="chart-container"><canvas id="visibilityChart"></canvas></div>
+                </div>
+
+                <div class="main-chart">
+                    <div class="chart-header"><h6>Prompts &amp; Responses</h6></div>
+                    <div class="prompts-table">
+                        <div class="table-header"><div>#</div><div>Prompt</div><div></div></div>
+                        <div class="table-body scroll-y" id="promptsBody"></div>
+                        <button class="all-data-btn" data-bs-toggle="modal" data-bs-target="#allPromptsModal">All Prompts</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="main-chart">
+                    <div class="chart-header"><h6>Industry Ranking</h6></div>
+                    <div class="rankings-table">
+                        <div class="table-header"><div>#</div><div>Brand</div><div>Visibility</div></div>
+                        <div class="table-body scroll-y" id="rankingBody"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ---------- Modals ---------- -->
+    <div class="modal fade" id="allDataModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable"><div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title">All Brands Ranking</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body"><div class="table-header"><div>#</div><div>Brand</div><div class="text-center">Visibility</div></div><div class="table-body" id="modalRankingBody"></div></div>
+        </div></div>
+    </div>
+
+    <div class="modal fade" id="allPromptsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable"><div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title">All Prompts &amp; Responses</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body" id="modalPromptsBody"></div>
+        </div></div>
+    </div>
+
+    <!-- ---------- Scripts ---------- -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // ---------- Dropdown toggle ----------
+        document.querySelectorAll('.filter-button').forEach(btn => {
+            btn.addEventListener('click', e => {
+                const list = btn.querySelector('.dropdown-checklist');
+                if (!list) return;
+                list.classList.toggle('show');
+            });
+        });
+        document.addEventListener('click', e => {
+            document.querySelectorAll('.dropdown-checklist.show').forEach(list => {
+                if (!list.parentElement.contains(e.target)) list.classList.remove('show');
+            });
+        });
+
+        // ---------- Chart & Tables (demo data) ----------
+        let visibilityChart = null;
+
+        function updateVisibilityChart(data){
+            const ctx = document.getElementById('visibilityChart').getContext('2d');
+            const rankings = data.rankings || [];
+            const labels = rankings.map(r => r.manufacturer);
+            const values = rankings.map(r => r.percentage);
+            if(visibilityChart) visibilityChart.destroy();
+            visibilityChart = new Chart(ctx,{type:'bar',data:{labels,datasets:[{data:values,label:'Visibility',backgroundColor:'rgb(82,146,255)',borderRadius:{topLeft:4,topRight:4}}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,max:100,ticks:{callback:v=>v+'%'}},x:{grid:{display:false}}}}});
+        }
+
+        function updateRanking(data){
+            const body=document.getElementById('rankingBody');
+            const list=document.getElementById('modalRankingBody');
+            const rankings = data.rankings || [];
+            const html=rowHtml(rankings);
+            body.innerHTML=html; list.innerHTML=html;
+            function rowHtml(arr){return arr.map((r,i)=>`<div class="table-row"><div class="rank-cell">${i+1}</div><div class="brand-cell"><div class="brand-logo"><i class="fas fa-car"></i></div><span>${r.manufacturer}</span></div><div class="text-end">${r.percentage}%</div></div>`).join('');}
+        }
+
+        function updatePrompts(data){
+            console.log("Debug: Data received in updatePrompts:", data);
+            const body=document.getElementById('promptsBody');
+            const modal=document.getElementById('modalPromptsBody');
+            
+            if (!data.prompts || !Array.isArray(data.prompts)) {
+                console.error("No prompts data found or invalid format");
+                return;
+            }
+            
+            console.log("Debug: Processing prompts:", data.prompts);
+            const html=data.prompts.map(p=>{
+                console.log("Debug: Processing prompt:", p);
+                return `
+                <div class="table-row prompt-row" data-bs-toggle="collapse" data-bs-target="#r${p.id}" aria-expanded="false">
+                    <div>${p.id}</div>
+                    <div>${p.prompt}</div>
+                    <div class="text-end"><i class="fas fa-chevron-down"></i></div>
+                </div>
+                <div id="r${p.id}" class="collapse response-cell">
+                    <div class="response-content">
+                        <div class="mb-2"><strong>Detected Brands:</strong> ${p.detected_brands ? p.detected_brands.join(', ') : 'None'}</div>
+                        <div class="mb-2"><strong>Sources:</strong></div>
+                        <div class="sources-list mb-2">
+                            ${p.sources ? p.sources.map(s => `
+                                <div class="source-item">
+                                    ${s.url ? `<a href="${s.url}" target="_blank">${s.url}</a>` : s.source}
+                                    ${s.citation_text ? `<div class="citation-text">${s.citation_text}</div>` : ''}
+                                </div>
+                            `).join('') : 'No sources available'}
+                        </div>
+                        <div class="response-text">${p.response || 'No response available'}</div>
+                    </div>
+                </div>
+            `}).join('');
+            
+            console.log("Debug: Generated HTML:", html);
+            body.innerHTML=html; modal.innerHTML=html;
+        }
+
+        function refreshDashboard() {
+            console.log("Debug: Fetching data from /get_results");
+            fetch('/get_results')
+                .then(response => response.json())
+                .then(result => {
+                    console.log("Debug: Data received from /get_results:", result);
+                    if (result.success) {
+                        const data = result.data;
+                        updateVisibilityChart(data);
+                        updateRanking(data);
+                        updatePrompts(data);
+                    } else {
+                        console.error('Failed to fetch results:', result.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching results:', error);
+                });
+        }
+
+        // Initialize the dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshDashboard();
+            // Initialize brand checklist
+            const brandList = document.getElementById('brandChecklist');
+            if (brandList) {
+                fetch('/get_results')
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.success) {
+                            const brands = result.data.rankings.map(r => r.manufacturer);
+                            brandList.innerHTML = brands.map(b => 
+                                `<label class="checklist-item"><input type="checkbox" value="${b}" checked> ${b}</label>`
+                            ).join('');
+                        }
+                    });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brand Analysis Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .dashboard-header {
+            padding: 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .filters {
+            padding: 1rem;
+            display: flex;
+            gap: 1rem;
+            border-bottom: 1px solid #e9ecef;
+            align-items: center;
+        }
+        .filter-button {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            background: white;
+            color: #495057;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            position: relative;
+        }
+        .dropdown-checklist {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 4px;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            z-index: 1000;
+            width: 200px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .dropdown-checklist.show {
+            display: block;
+        }
+        .checklist-item {
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .checklist-item.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            position: relative;
+        }
+        .checklist-item.disabled:hover::after {
+            content: 'Coming soon';
+            position: absolute;
+            right: -90px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 1000;
+        }
+        .checklist-item.disabled input {
+            pointer-events: none;
+        }
+        .checklist-item.disabled label {
+            cursor: not-allowed;
+        }
+        .checklist-item:hover {
+            background-color: #f8f9fa;
+        }
+        .checklist-item input[type="checkbox"] {
+            margin: 0;
+        }
+        .brand-select {
+            min-width: 200px;
+        }
+        .main-chart {
+            padding: 1.5rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+            margin-left: 1rem;
+            margin-right: 1rem;
+        }
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .ranking-table {
+            display: none;  /* Hide the old ranking-table class */
+            width: 100%;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin: 1rem;
+            padding: 1rem;
+        }
+        .brand-row {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .brand-logo {
+            width: 24px;
+            height: 24px;
+            margin-right: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .brand-logo img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .visibility-value {
+            margin-left: auto;
+            font-weight: 500;
+        }
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+        .progress {
+            height: 6px;
+            margin-top: 0.5rem;
+        }
+        .progress-bar {
+            background-color: #0d6efd;
+        }
+        /* Custom styles for Select2 dropdown */
+        .select2-container--default .select2-selection--multiple {
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            min-height: 38px;
+        }
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 2px 8px;
+            margin: 2px;
+        }
+        .prompts-section {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin: 1rem;
+            padding: 1rem;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 0 1rem;
+        }
+        .accordion-button {
+            background-color: #f8f9fa;
+            color: #495057;
+            font-weight: 500;
+            border: none;
+            padding: 1rem;
+        }
+        .accordion-button:not(.collapsed) {
+            background-color: #e9ecef;
+            color: #212529;
+        }
+        .accordion-body {
+            background-color: #fff;
+            padding: 1.25rem;
+            line-height: 1.6;
+            color: #495057;
+        }
+        .accordion-item {
+            border: 1px solid #e9ecef;
+            margin-bottom: 0.5rem;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .accordion-button:focus {
+            box-shadow: none;
+            border-color: #e9ecef;
+        }
+        .brand-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s;
+        }
+        .brand-item:hover {
+            background-color: #f5f5f5;
+        }
+        .brand-logo {
+            width: 40px;
+            height: 40px;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .brand-logo img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .brand-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .brand-name {
+            font-weight: 600;
+            color: #333;
+        }
+        .brand-stats {
+            font-size: 0.9em;
+            color: #666;
+        }
+        .rankings-list {
+            max-height: 600px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        .rankings-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        .rankings-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .rankings-list::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+        .rankings-list::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        .rankings-container {
+            max-height: 250px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        .top-rankings {
+            border-bottom: 2px solid #e9ecef;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+        }
+        .all-rankings {
+            opacity: 0.8;
+        }
+        .rankings-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .rankings-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        .rankings-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+        .rankings-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        .brand-row {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            border-bottom: 1px solid #e9ecef;
+            transition: background-color 0.2s;
+            height: 50px;
+        }
+        .brand-row:hover {
+            background-color: #f8f9fa;
+        }
+        .brand-logo {
+            width: 24px;
+            height: 24px;
+            margin-right: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .brand-logo img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .visibility-value {
+            margin-left: auto;
+            font-weight: 500;
+        }
+        .rankings-table {
+            min-height: 450px;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .rankings-table .table-body {
+            height: 250px;  /* Fixed height for 5 rows */
+            overflow-y: auto;
+            scrollbar-width: thin;
+            flex: 1;
+        }
+        .rankings-table .table-body::-webkit-scrollbar {
+            width: 6px;
+        }
+        .rankings-table .table-body::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        .rankings-table .table-body::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+        .rankings-table .table-body::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        .rankings-table .table-row {
+            height: 50px;  /* Fixed height for each row */
+            display: grid;
+            grid-template-columns: 50px 1fr 100px;
+            padding: 12px 16px;
+            border-bottom: 1px solid #dee2e6;
+            align-items: center;
+        }
+        .table-header {
+            display: grid;
+            grid-template-columns: 50px 1fr 100px;
+            padding: 12px 16px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            font-weight: 500;
+            color: #6c757d;
+        }
+        .table-body {
+            max-height: 400px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+        }
+        .table-row {
+            display: grid;
+            grid-template-columns: 50px 1fr 100px;
+            padding: 12px 16px;
+            border-bottom: 1px solid #dee2e6;
+            align-items: center;
+        }
+        .table-row:hover {
+            background-color: #f8f9fa;
+        }
+        .cell {
+            display: flex;
+            align-items: center;
+        }
+        .rank-cell {
+            color: #6c757d;
+            font-weight: 500;
+        }
+        .brand-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .brand-logo {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .brand-logo img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .all-data-btn {
+            margin: 0;
+            padding: 12px;
+            border: none;
+            background: #f8f9fa;
+            color: #6c757d;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border-top: 1px solid #dee2e6;
+        }
+        .all-data-btn:hover {
+            background: #e9ecef;
+        }
+        .modal-dialog {
+            max-width: 600px;
+        }
+        .modal-body .table-body {
+            max-height: 400px;
+        }
+        .text-end {
+            text-align: right;
+        }
+        /* Custom scrollbar for the table body */
+        .table-body::-webkit-scrollbar {
+            width: 6px;
+        }
+        .table-body::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .table-body::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+        .table-body::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        .prompts-table {
+            min-height: 450px;
+            display: flex;
+            flex-direction: column;
+        }
+        .table-header {
+            flex-shrink: 0;
+        }
+        .table-body {
+            flex: 1;
+            overflow-y: auto;
+            max-height: 400px;
+            scrollbar-width: thin;
+        }
+        .all-data-btn {
+            flex-shrink: 0;
+        }
+        .prompt-row {
+            cursor: pointer;
+        }
+        .prompt-row:hover {
+            background-color: #f8f9fa;
+        }
+        .response-cell {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .response-content {
+            padding: 16px;
+            font-size: 0.9em;
+            color: #495057;
+            white-space: pre-line;
+        }
+        .fa-chevron-down {
+            transition: transform 0.2s;
+        }
+        .prompt-row[aria-expanded="true"] .fa-chevron-down {
+            transform: rotate(180deg);
+        }
+        .dummy-content {
+            padding: 20px;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .placeholder-item {
+            height: 24px;
+            background: #f8f9fa;
+            margin-bottom: 16px;
+            border-radius: 4px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+        .rankings-table {
+            min-height: 450px;
+        }
+        .header-cell.text-center,
+        .cell.text-center {
+            justify-content: center;
+            text-align: center;
+        }
+        .sources-table {
+            min-height: 450px;
+            display: flex;
+            flex-direction: column;
+        }
+        .sources-table .table-header {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr 2fr;
+            padding: 12px 16px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            font-weight: 500;
+            color: #6c757d;
+        }
+        .sources-table .table-body {
+            flex: 1;
+            overflow-y: auto;
+            max-height: 400px;
+        }
+        .sources-table .table-row {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr 2fr;
+            padding: 12px 16px;
+            border-bottom: 1px solid #dee2e6;
+            align-items: center;
+        }
+        .sources-table .table-row:hover {
+            background-color: #f8f9fa;
+        }
+        .sources-table a {
+            color: #0d6efd;
+            text-decoration: none;
+        }
+        .sources-table a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-header">
+        <h5>Brand Analysis Dashboard</h5>
+    </div>
+
+    <div class="filters">
+        <button class="filter-button">
+            <i class="fas fa-calendar"></i>
+            Last 30 days
+        </button>
+        <button class="filter-button" id="brandFilter">
+            <i class="fas fa-filter"></i>
+            All Brands
+            <div class="dropdown-checklist" id="brandChecklist">
+                <!-- Brand checkboxes will be dynamically added here -->
+            </div>
+        </button>
+        <button class="filter-button" id="modelFilter">
+            <i class="fas fa-robot"></i>
+            AI Models
+            <div class="dropdown-checklist" id="modelChecklist">
+                <div class="checklist-item">
+                    <input type="checkbox" id="model_mistral" value="mistral" checked disabled>
+                    <label for="model_mistral">Mistral AI <i class="fas fa-check text-success"></i></label>
+                </div>
+                <div class="checklist-item disabled">
+                    <input type="checkbox" id="model_chatgpt" value="chatgpt" disabled>
+                    <label for="model_chatgpt">ChatGPT <i class="fas fa-clock text-muted"></i></label>
+                </div>
+                <div class="checklist-item disabled">
+                    <input type="checkbox" id="model_deepseek" value="deepseek" disabled>
+                    <label for="model_deepseek">Deepseek <i class="fas fa-clock text-muted"></i></label>
+                </div>
+                <div class="checklist-item disabled">
+                    <input type="checkbox" id="model_grok" value="grok" disabled>
+                    <label for="model_grok">Grok <i class="fas fa-clock text-muted"></i></label>
+                </div>
+                <div class="checklist-item disabled">
+                    <input type="checkbox" id="model_perplexity" value="perplexity" disabled>
+                    <label for="model_perplexity">Perplexity <i class="fas fa-clock text-muted"></i></label>
+                </div>
+                <div class="checklist-item disabled">
+                    <input type="checkbox" id="model_claude" value="claude" disabled>
+                    <label for="model_claude">Claude <i class="fas fa-clock text-muted"></i></label>
+                </div>
+                <div class="checklist-item disabled">
+                    <input type="checkbox" id="model_gemini" value="gemini" disabled>
+                    <label for="model_gemini">Gemini <i class="fas fa-clock text-muted"></i></label>
+                </div>
+            </div>
+        </button>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Main Chart Section -->
+            <div class="col-md-8">
+                <div class="main-chart">
+                    <div class="chart-header">
+                        <h6>Brand Visibility</h6>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="visibilityChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Prompts Section -->
+                <div class="main-chart">
+                    <div class="chart-header">
+                        <h6>Prompts & Responses</h6>
+                    </div>
+                    <div class="prompts-table">
+                        <div class="table-header">
+                            <div class="header-cell">#</div>
+                            <div class="header-cell">Prompt</div>
+                            <div class="header-cell text-end">
+        
+                            </div>
+                        </div>
+                        <div class="table-body">
+                            {% for prompt in results.prompts_responses %}
+                            <div class="table-row prompt-row" data-bs-toggle="collapse" data-bs-target="#response{{ loop.index }}">
+                                <div class="cell rank-cell">{{ loop.index }}</div>
+                                <div class="cell">{{ prompt.prompt }}</div>
+                                <div class="cell text-end">
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                            </div>
+                            <div class="collapse response-cell" id="response{{ loop.index }}">
+                                <div class="response-content">
+                                    {{ prompt.response | replace('\n', '<br>') | safe }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <button class="all-data-btn" data-bs-toggle="modal" data-bs-target="#allPromptsModal">
+                            All Prompts
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sources Table Section -->
+                <div class="main-chart">
+                    <div class="chart-header">
+                        <h6>All Sources</h6>
+                    </div>
+                    <div class="sources-table">
+                        <div class="table-header">
+                            <div class="header-cell">Domain</div>
+                            <div class="header-cell">URL</div>
+                            <div class="header-cell">Type</div>
+                            <div class="header-cell">Citation Text</div>
+                        </div>
+                        <div class="table-body">
+                            {% for source in results.sources %}
+                            <div class="table-row">
+                                <div class="cell">{{ source.domain }}</div>
+                                <div class="cell">
+                                    <a href="{{ source.url }}" target="_blank">{{ source.url }}</a>
+                                </div>
+                                <div class="cell">{{ source.type }}</div>
+                                <div class="cell">{{ source.citation_text }}</div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="col-md-4">
+                <!-- Rankings Section -->
+                <div class="main-chart">
+                    <div class="chart-header">
+                        <h6>Industry Ranking</h6>
+                    </div>
+                    <div class="rankings-table">
+                        <div class="table-header">
+                            <div class="header-cell">#</div>
+                            <div class="header-cell">Brand</div>
+                            <div class="header-cell">
+                                Visibility
+                                <i class="fas fa-info-circle" data-bs-toggle="tooltip" title="Percentage of mentions across all prompts"></i>
+                            </div>
+                        </div>
+                        <div class="table-body">
+                            {% for brand in results.rankings %}
+                            <div class="table-row">
+                                <div class="cell rank-cell">{{ loop.index }}</div>
+                                <div class="cell brand-cell">
+                                    <div class="brand-logo">
+                                        {% if brand.logo_url %}
+                                        <img src="{{ brand.logo_url }}" alt="{{ brand.manufacturer }} logo" onerror="this.style.display='none'">
+                                        {% endif %}
+                                    </div>
+                                    <span>{{ brand.manufacturer }}</span>
+                                </div>
+                                <div class="cell text-center">{{ brand.percentage }}%</div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <button class="all-data-btn" data-bs-toggle="modal" data-bs-target="#allDataModal">
+                            All Data
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Coming Soon Section -->
+                <div class="main-chart">
+                    <div class="chart-header">
+                        <h6>Coming Soon</h6>
+                        <small class="text-muted">Future feature</small>
+                    </div>
+                    <div class="rankings-table">
+                        <div class="table-header">
+                            <div class="header-cell">#</div>
+                            <div class="header-cell">Source</div>
+                            <div class="header-cell text-center">References</div>
+                        </div>
+                        <div class="table-body" id="sourcesTableBody">
+                            <!-- Sources will be dynamically added here -->
+                        </div>
+                        <button class="all-data-btn" data-bs-toggle="modal" data-bs-target="#allSourcesModal">
+                            All Sources
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for All Data -->
+    <div class="modal fade" id="allDataModal" tabindex="-1" aria-labelledby="allDataModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="allDataModalLabel">All Brands Ranking</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-header">
+                        <div class="header-cell">#</div>
+                        <div class="header-cell">Brand</div>
+                        <div class="header-cell text-center">Visibility</div>
+                    </div>
+                    <div class="table-body">
+                        {% for brand in results.rankings %}
+                        <div class="table-row">
+                            <div class="cell rank-cell">{{ loop.index }}</div>
+                            <div class="cell brand-cell">
+                                <div class="brand-logo">
+                                    {% if brand.logo_url %}
+                                    <img src="{{ brand.logo_url }}" alt="{{ brand.manufacturer }} logo" onerror="this.style.display='none'">
+                                    {% endif %}
+                                </div>
+                                <span>{{ brand.manufacturer }}</span>
+                            </div>
+                            <div class="cell text-center">{{ brand.percentage }}%</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for All Prompts -->
+    <div class="modal fade" id="allPromptsModal" tabindex="-1" aria-labelledby="allPromptsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="allPromptsModalLabel">All Prompts & Responses</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="prompts-table">
+                        <div class="table-header">
+                            <div class="header-cell">#</div>
+                            <div class="header-cell">Prompt</div>
+                        </div>
+                        <div class="table-body">
+                            {% for prompt in results.prompts_responses %}
+                            <div class="table-row prompt-row" data-bs-toggle="collapse" data-bs-target="#modalResponse{{ loop.index }}">
+                                <div class="cell rank-cell">{{ loop.index }}</div>
+                                <div class="cell">{{ prompt.prompt }}</div>
+                                <div class="cell text-end">
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                            </div>
+                            <div class="collapse response-cell" id="modalResponse{{ loop.index }}">
+                                <div class="response-content">
+                                    {{ prompt.response | replace('\n', '<br>') | safe }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for All Sources -->
+    <div class="modal fade" id="allSourcesModal" tabindex="-1" aria-labelledby="allSourcesModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="allSourcesModalLabel">All Sources</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-header">
+                        <div class="header-cell">#</div>
+                        <div class="header-cell">Source</div>
+                        <div class="header-cell text-center">References</div>
+                    </div>
+                    <div class="table-body" id="modalSourcesTableBody">
+                        <!-- Sources will be dynamically added here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        let visibilityChart = null;
+        const chartData = JSON.parse('{{ results.rankings | tojson | safe }}');
+        let selectedBrands = new Set(chartData.slice(0, 10).map(brand => brand.manufacturer));
+
+        function updateChart() {
+            const filteredData = chartData.filter(item => selectedBrands.has(item.manufacturer));
+            
+            // Prepare data for the chart
+            const labels = filteredData.map(r => r.manufacturer);
+            const data = filteredData.map(r => r.percentage);
+            
+            const config = {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Brand Visibility',
+                        data: data,
+                        backgroundColor: 'rgb(82, 146, 255)',
+                        borderColor: 'rgb(82, 146, 255)',
+                        borderWidth: 0,
+                        borderRadius: {
+                            topLeft: 4,
+                            topRight: 4,
+                            bottomLeft: 0,
+                            bottomRight: 0
+                        },
+                        barThickness: 65,
+                        categoryPercentage: 1.0,
+                        barPercentage: 0.98
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'x',
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.raw}%`;
+                                }
+                            },
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            padding: 12,
+                            cornerRadius: 4
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 35,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                },
+                                stepSize: 5,
+                                font: {
+                                    size: 11
+                                }
+                            },
+                            grid: {
+                                display: true,
+                                color: '#f0f0f0',
+                                drawBorder: false
+                            },
+                            border: {
+                                display: false
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                font: {
+                                    size: 13,
+                                    weight: '500'
+                                }
+                            },
+                            border: {
+                                display: false
+                            }
+                        }
+                    },
+                    layout: {
+                        padding: {
+                            left: 0,
+                            right: 20,
+                            top: 20,
+                            bottom: 0
+                        }
+                    }
+                }
+            };
+
+            if (visibilityChart) {
+                visibilityChart.destroy();
+            }
+            visibilityChart = new Chart(document.getElementById('visibilityChart'), config);
+        }
+
+        // Initialize brand checklist
+        function initializeBrandChecklist() {
+            const checklist = document.getElementById('brandChecklist');
+            checklist.innerHTML = '';
+            
+            chartData.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'checklist-item';
+                div.innerHTML = `
+                    <input type="checkbox" id="brand_${item.manufacturer}" 
+                           value="${item.manufacturer}" 
+                           ${selectedBrands.has(item.manufacturer) ? 'checked' : ''}>
+                    <label for="brand_${item.manufacturer}">
+                        ${item.manufacturer}
+                    </label>
+                `;
+                checklist.appendChild(div);
+
+                // Add event listener directly here
+                const checkbox = div.querySelector('input[type="checkbox"]');
+                checkbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        selectedBrands.add(this.value);
+                    } else {
+                        selectedBrands.delete(this.value);
+                    }
+                    updateChart();
+                });
+            });
+        }
+
+        // Toggle dropdown
+        document.getElementById('brandFilter').addEventListener('click', function(e) {
+            const checklist = document.getElementById('brandChecklist');
+            checklist.classList.toggle('show');
+            e.stopPropagation();
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            const checklist = document.getElementById('brandChecklist');
+            if (!e.target.closest('#brandFilter')) {
+                checklist.classList.remove('show');
+            }
+        });
+
+        // Toggle model dropdown
+        document.getElementById('modelFilter').addEventListener('click', function(e) {
+            const checklist = document.getElementById('modelChecklist');
+            checklist.classList.toggle('show');
+            e.stopPropagation();
+        });
+
+        // Close all dropdowns when clicking outside
+        document.addEventListener('click', function(e) {
+            const brandChecklist = document.getElementById('brandChecklist');
+            const modelChecklist = document.getElementById('modelChecklist');
+            if (!e.target.closest('#brandFilter')) {
+                brandChecklist.classList.remove('show');
+            }
+            if (!e.target.closest('#modelFilter')) {
+                modelChecklist.classList.remove('show');
+            }
+        });
+
+        // Initialize the chart and checklist when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeBrandChecklist();
+            updateChart();
+        });
+
+        // Initialize tooltips
+        document.addEventListener('DOMContentLoaded', function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+        });
+
+        // Add animation for chevron rotation
+        document.addEventListener('DOMContentLoaded', function() {
+            const promptRows = document.querySelectorAll('.prompt-row');
+            promptRows.forEach(row => {
+                row.addEventListener('click', function() {
+                    const icon = this.querySelector('.fa-chevron-down');
+                    icon.style.transform = this.getAttribute('aria-expanded') === 'true' 
+                        ? 'rotate(180deg)' 
+                        : 'rotate(0deg)';
+                });
+            });
+        });
+
+        function updateSourceUsageChart() {
+            try {
+                // Get the source data from the template variable
+                const sourceData = JSON.parse('{{ results.sources | tojson | safe }}');
+                
+                // Check if we have valid data
+                if (!sourceData || !Array.isArray(sourceData)) {
+                    console.error('Invalid source data format:', sourceData);
+                    return;
+                }
+
+                // Process the sources data to get domain counts
+                const domainCounts = {};
+                sourceData.forEach(source => {
+                    const domain = source.domain;
+                    if (domain) {
+                        domainCounts[domain] = (domainCounts[domain] || 0) + 1;
+                    }
+                });
+
+                // Sort domains by count in descending order
+                const sortedDomains = Object.entries(domainCounts)
+                    .sort((a, b) => b[1] - a[1]);
+
+                // Update the sources table
+                const tableBody = document.getElementById('sourcesTableBody');
+                const modalTableBody = document.getElementById('modalSourcesTableBody');
+                
+                if (tableBody && modalTableBody) {
+                    tableBody.innerHTML = '';
+                    modalTableBody.innerHTML = '';
+                    
+                    sortedDomains.forEach(([domain, count], index) => {
+                        const row = document.createElement('div');
+                        row.className = 'table-row';
+                        row.innerHTML = `
+                            <div class="cell rank-cell">${index + 1}</div>
+                            <div class="cell">
+                                <a href="https://${domain}" target="_blank">${domain}</a>
+                            </div>
+                            <div class="cell text-center">${count}</div>
+                        `;
+                        
+                        // Add to main table (show only first 5)
+                        if (index < 5) {
+                            tableBody.appendChild(row.cloneNode(true));
+                        }
+                        
+                        // Add to modal table (show all)
+                        modalTableBody.appendChild(row);
+                    });
+                }
+            } catch (error) {
+                console.error('Error updating source usage table:', error);
+            }
+        }
+
+        // Initialize the source usage table when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            updateSourceUsageChart();
+        });
+    </script>
+</body>
+</html> 

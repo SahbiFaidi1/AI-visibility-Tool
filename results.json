@@ -1,0 +1,306 @@
+{
+  "total_manufacturers": 43,
+  "rankings": [
+    {
+      "manufacturer": "Honda",
+      "mentions": 27,
+      "percentage": 26.7,
+      "context_count": 27,
+      "logo_url": "https://logo.clearbit.com/honda.com"
+    },
+    {
+      "manufacturer": "Toyota",
+      "mentions": 26,
+      "percentage": 25.7,
+      "context_count": 26,
+      "logo_url": "https://logo.clearbit.com/toyota.com"
+    },
+    {
+      "manufacturer": "Mercedes-Benz",
+      "mentions": 24,
+      "percentage": 23.8,
+      "context_count": 24,
+      "logo_url": "https://logo.clearbit.com/mercedes-benz.com"
+    },
+    {
+      "manufacturer": "BMW",
+      "mentions": 17,
+      "percentage": 16.8,
+      "context_count": 17,
+      "logo_url": "https://logo.clearbit.com/bmw.com"
+    },
+    {
+      "manufacturer": "Subaru",
+      "mentions": 14,
+      "percentage": 13.9,
+      "context_count": 14,
+      "logo_url": "https://logo.clearbit.com/subaru.com"
+    },
+    {
+      "manufacturer": "Mazda",
+      "mentions": 13,
+      "percentage": 12.9,
+      "context_count": 13,
+      "logo_url": "https://logo.clearbit.com/mazda.com"
+    },
+    {
+      "manufacturer": "Nissan",
+      "mentions": 13,
+      "percentage": 12.9,
+      "context_count": 13,
+      "logo_url": "https://logo.clearbit.com/nissan.com"
+    },
+    {
+      "manufacturer": "Audi",
+      "mentions": 12,
+      "percentage": 11.9,
+      "context_count": 12,
+      "logo_url": "https://logo.clearbit.com/audi.com"
+    },
+    {
+      "manufacturer": "Tesla",
+      "mentions": 13,
+      "percentage": 11.9,
+      "context_count": 12,
+      "logo_url": "https://logo.clearbit.com/tesla.com"
+    },
+    {
+      "manufacturer": "Lexus",
+      "mentions": 10,
+      "percentage": 9.9,
+      "context_count": 10,
+      "logo_url": "https://logo.clearbit.com/lexus.com"
+    },
+    {
+      "manufacturer": "Hyundai",
+      "mentions": 11,
+      "percentage": 9.9,
+      "context_count": 10,
+      "logo_url": "https://logo.clearbit.com/hyundai.com"
+    },
+    {
+      "manufacturer": "Volkswagen",
+      "mentions": 9,
+      "percentage": 8.9,
+      "context_count": 9,
+      "logo_url": "https://logo.clearbit.com/volkswagen.com"
+    },
+    {
+      "manufacturer": "Chevrolet",
+      "mentions": 9,
+      "percentage": 7.9,
+      "context_count": 8,
+      "logo_url": "https://logo.clearbit.com/chevrolet.com"
+    },
+    {
+      "manufacturer": "Kia",
+      "mentions": 8,
+      "percentage": 7.9,
+      "context_count": 8,
+      "logo_url": "https://logo.clearbit.com/kia.com"
+    },
+    {
+      "manufacturer": "Volvo",
+      "mentions": 7,
+      "percentage": 6.9,
+      "context_count": 7,
+      "logo_url": "https://logo.clearbit.com/volvo.com"
+    },
+    {
+      "manufacturer": "Aston Martin",
+      "mentions": 5,
+      "percentage": 5.0,
+      "context_count": 5,
+      "logo_url": ""
+    },
+    {
+      "manufacturer": "Jaguar",
+      "mentions": 4,
+      "percentage": 4.0,
+      "context_count": 4,
+      "logo_url": "https://logo.clearbit.com/jaguar.com"
+    },
+    {
+      "manufacturer": "Bolt EV",
+      "mentions": 4,
+      "percentage": 3.0,
+      "context_count": 3,
+      "logo_url": "https://logo.clearbit.com/bolt-ev.com"
+    },
+    {
+      "manufacturer": "Buick",
+      "mentions": 3,
+      "percentage": 3.0,
+      "context_count": 3,
+      "logo_url": "https://logo.clearbit.com/buick.com"
+    },
+    {
+      "manufacturer": "Maserati",
+      "mentions": 3,
+      "percentage": 3.0,
+      "context_count": 3,
+      "logo_url": "https://logo.clearbit.com/maserati.com"
+    },
+    {
+      "manufacturer": "Ferrari",
+      "mentions": 3,
+      "percentage": 3.0,
+      "context_count": 3,
+      "logo_url": "https://logo.clearbit.com/ferrari.com"
+    },
+    {
+      "manufacturer": "Jeep",
+      "mentions": 3,
+      "percentage": 3.0,
+      "context_count": 3,
+      "logo_url": "https://logo.clearbit.com/jeep.com"
+    },
+    {
+      "manufacturer": "Bentley",
+      "mentions": 2,
+      "percentage": 2.0,
+      "context_count": 2,
+      "logo_url": "https://logo.clearbit.com/bentley.com"
+    },
+    {
+      "manufacturer": "SUV",
+      "mentions": 3,
+      "percentage": 2.0,
+      "context_count": 2,
+      "logo_url": "https://logo.clearbit.com/suv.ai"
+    },
+    {
+      "manufacturer": "Mitsubishi",
+      "mentions": 2,
+      "percentage": 2.0,
+      "context_count": 2,
+      "logo_url": "https://logo.clearbit.com/mitsubishi.com"
+    },
+    {
+      "manufacturer": "Genesis",
+      "mentions": 2,
+      "percentage": 2.0,
+      "context_count": 2,
+      "logo_url": "https://logo.clearbit.com/genesis.com"
+    },
+    {
+      "manufacturer": "Rolls-Royce",
+      "mentions": 2,
+      "percentage": 2.0,
+      "context_count": 2,
+      "logo_url": "https://logo.clearbit.com/rolls-royce.com"
+    },
+    {
+      "manufacturer": "GM",
+      "mentions": 2,
+      "percentage": 2.0,
+      "context_count": 2,
+      "logo_url": "https://logo.clearbit.com/gm.com"
+    },
+    {
+      "manufacturer": "Chevrolet Volt",
+      "mentions": 1,
+      "percentage": 1.0,
+      "context_count": 1,
+      "logo_url": ""
+    },
+    {
+      "manufacturer": "Peugeot",
+      "mentions": 1,
+      "percentage": 1.0,
+      "context_count": 1,
+      "logo_url": "https://logo.clearbit.com/peugeot.com"
+    },
+    {
+      "manufacturer": "Volkswagen Atlas",
+      "mentions": 1,
+      "percentage": 1.0,
+      "context_count": 1,
+      "logo_url": ""
+    },
+    {
+      "manufacturer": "Mustang",
+      "mentions": 1,
+      "percentage": 1.0,
+      "context_count": 1,
+      "logo_url": "https://logo.clearbit.com/mustang.com"
+    },
+    {
+      "manufacturer": "Mercedes-Benz GLS",
+      "mentions": 1,
+      "percentage": 1.0,
+      "context_count": 1,
+      "logo_url": ""
+    },
+    {
+      "manufacturer": "Capital America",
+      "mentions": 1,
+      "percentage": 1.0,
+      "context_count": 1,
+      "logo_url": ""
+    },
+    {
+      "manufacturer": "Subaru Ascent",
+      "mentions": 1,
+      "percentage": 1.0,
+      "context_count": 1,
+      "logo_url": ""
+    },
+    {
+      "manufacturer": "Jeep Wrangler",
+      "mentions": 1,
+      "percentage": 1.0,
+      "context_count": 1,
+      "logo_url": ""
+    },
+    {
+      "manufacturer": "Miata",
+      "mentions": 1,
+      "percentage": 1.0,
+      "context_count": 1,
+      "logo_url": "https://logo.clearbit.com/miata.net"
+    },
+    {
+      "manufacturer": "NVIDIA",
+      "mentions": 1,
+      "percentage": 1.0,
+      "context_count": 1,
+      "logo_url": "https://logo.clearbit.com/nvidia.com"
+    },
+    {
+      "manufacturer": "Nissan Leaf",
+      "mentions": 1,
+      "percentage": 1.0,
+      "context_count": 1,
+      "logo_url": ""
+    },
+    {
+      "manufacturer": "Mini",
+      "mentions": 1,
+      "percentage": 1.0,
+      "context_count": 1,
+      "logo_url": "https://logo.clearbit.com/mini.com"
+    },
+    {
+      "manufacturer": "Toyota Sienna",
+      "mentions": 1,
+      "percentage": 1.0,
+      "context_count": 1,
+      "logo_url": ""
+    },
+    {
+      "manufacturer": "Financial Services",
+      "mentions": 2,
+      "percentage": 1.0,
+      "context_count": 1,
+      "logo_url": ""
+    },
+    {
+      "manufacturer": "Ram",
+      "mentions": 1,
+      "percentage": 1.0,
+      "context_count": 1,
+      "logo_url": "https://logo.clearbit.com/ram.com"
+    }
+  ]
+}
