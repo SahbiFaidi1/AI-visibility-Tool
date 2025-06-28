@@ -1,2 +1,3 @@
 ctransformers==0.2.27
-numpy==1.24.3 
+numpy
+mistralai==0.4.2

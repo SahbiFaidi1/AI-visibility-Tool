@@ -1,2 +1,19 @@
 # Ignore Python virtual environment
-.venv/ 
+.venv/
+# Editor settings
+.vscode/
+
+# Python artifacts
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+
+# Temporary scripts
+get-pip.py
+
+
+# System files
+.DS_Store
+Thumbs.db
