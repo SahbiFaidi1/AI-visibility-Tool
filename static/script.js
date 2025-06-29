@@ -124,12 +124,23 @@ function setObservedBrand(brand) {
     visibilityContent.style.display = isBrandSelected ? 'none' : 'block';
 
     if (isBrandSelected) {
-        document.getElementById('brand-year-title').textContent = `${observedBrand} - Past Year`;
         fillBrandSummaryInfo();
         updateBrandYearChart();
     } else {
         updateChart();
     }
+
+    // set the background color of the brand row to purple and content color to white
+    const brandRows = document.querySelectorAll('.clickable-brand-row');
+    brandRows.forEach(row => {
+        if (row.dataset.brand === observedBrand) {
+            row.style.backgroundColor = '#4d36cc';
+            row.style.color = '#fff';
+        } else {
+            row.style.backgroundColor = '';
+            row.style.color = '';
+        }
+    });
 }
 
 function fillBrandSummaryInfo() {
@@ -337,9 +348,19 @@ document.addEventListener('DOMContentLoaded', function() {
             icon.style.transform = this.getAttribute('aria-expanded') === 'true' 
                 ? 'rotate(180deg)' 
                 : 'rotate(0deg)';
+            // If aria-expanded set the background color of the row to purple and content color to white
+            if (this.getAttribute('aria-expanded') === 'true') {
+                this.style.backgroundColor = '#4d36cc';
+                this.style.color = '#fff';
+            } else {
+                this.style.backgroundColor = '';
+                this.style.color = '';
+            }
         });
     });
 });
+
+
 
 function updateSourceUsageChart() {
     try {
@@ -406,6 +427,10 @@ document.addEventListener('DOMContentLoaded', function() {
 document.querySelectorAll('.clickable-brand-row').forEach(row => {
     row.addEventListener('click', () => {
         const brand = row.dataset.brand;
-        setObservedBrand(brand);
+        if (brand === observedBrand) {
+            setObservedBrand(null); // Deselect if already selected
+        } else {
+            setObservedBrand(brand);
+        }
     });
 });

@@ -377,21 +377,15 @@ body {
     display: flex;
     align-items: center;
 }
-.rank-cell {
-    color: #6c757d;
-    font-weight: 500;
-}
 
-/* Make sure .table-row:hover overrides .rank-cell color */
+
 .table-row:hover {
     background-color: #4d36cc;
     border-radius: 4px;
     color: white;
     cursor: pointer;
 }
-.table-row:hover .rank-cell {
-    color: white !important;
-}
+
 
 .brand-cell {
     display: flex;
@@ -467,9 +461,7 @@ body {
 .prompt-row {
     cursor: pointer;
 }
-.prompt-row:hover {
-    background-color: #f8f9fa;
-}
+
 .response-cell {
     background-color: #f8f9fa;
     border-bottom: 1px solid #dee2e6;
@@ -539,12 +531,15 @@ body {
     border-bottom: 1px solid #dee2e6;
     align-items: center;
 }
-.sources-table .table-row:hover {
+.sources-table .table-row:hover a {
     background-color: #f8f9fa;
 }
 .sources-table a {
     color: #0d6efd;
     text-decoration: none;
+    padding: 3px;
+    border-radius: 8px;
+    margin-right: 8px;
 }
 .sources-table a:hover {
     text-decoration: underline;
