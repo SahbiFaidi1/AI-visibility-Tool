@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Brand Analysis Tool</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:400,500,600&display=swap" rel="stylesheet">
+</head>
+<body class="landing-page">
+    <img src="https://i.ibb.co/8D3TzHjF/0aebbeb3-3e30-4b79-9e55-d2294f3db253.png" class="landing-logo" alt="Header Image">
+    <div class="landing-slogan">Your AI-powered brand visibility insight</div>
+    <a href="{{ url_for('dashboard') }}">
+        <button class="landing-dashboard-btn">Go to Dashboard</button>
+    </a>
+</body>
+</html>

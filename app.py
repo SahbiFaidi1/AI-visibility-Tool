@@ -7,7 +7,12 @@ import csv
 app = Flask(__name__)
 
 @app.route('/')
-def index():
+def landing():
+    return render_template('landing.html')
+
+
+@app.route('/dashboard')
+def dashboard():
     try:
         # Read the analysis results
         with open('results_enhanced.json', 'r') as f:
