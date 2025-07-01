@@ -329,6 +329,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeBrandChecklist();
     updateChart();
     setObservedBrand(null); // Set initial state with no brand selected
+    createSourceBubbles();
 });
 
 // Initialize tooltips
@@ -365,7 +366,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function updateSourceUsageChart() {
     try {
         // Get the source data from the template variable
-        const sourceData = JSON.parse(dataSources);
+        const sourceData = dataSources;
         
         // Check if we have valid data
         if (!sourceData || !Array.isArray(sourceData)) {
@@ -423,6 +424,107 @@ function updateSourceUsageChart() {
 document.addEventListener('DOMContentLoaded', function() {
     updateSourceUsageChart();
 });
+
+function createSourceBubbles() {
+    const counts = {};
+    const domains = dataSources.map(source => {
+        const parts = source.domain.split('.');
+        return parts[0].includes('www') ? parts[1] : parts[0];
+    });
+    console.log('domains:', dataSources);
+    
+    domains.forEach(domain => {
+        counts[domain] = (counts[domain] || 0) + 1;
+    });
+    const total = domains.length;
+
+    const bubbleData = Object.entries(counts).map(([domain, count]) => ({
+        domain,
+        percentage: Math.round((count / total) * 100)
+    }));
+
+    const top4 = bubbleData
+    .sort((a, b) => b.percentage - a.percentage)
+    .slice(0, 8);
+
+    function randomColor() {
+        const hue = Math.floor(Math.random() * 360);
+        return `hsla(${hue}, 70%, 80%, 0.6)`; // light pastel
+    }
+
+    const ctx = document.getElementById('bubbleChart').getContext('2d');
+    const canvas = document.getElementById('bubbleChart');
+    const width = canvas.offsetWidth;
+    const height = canvas.offsetHeight;
+    const scaleFactor = Math.min(width, height) / 24; 
+    const bubbleLabelPlugin = {
+    id: 'bubbleLabelPlugin',
+    afterDatasetsDraw(chart) {
+        const { ctx } = chart;
+
+        chart.data.datasets.forEach((dataset, datasetIndex) => {
+        const meta = chart.getDatasetMeta(datasetIndex);
+        const point = meta.data[0]; // since each dataset has one bubble
+
+        if (!point) return;
+
+        const { x, y } = point.getCenterPoint(); // safe, supported method
+
+        ctx.save();
+        ctx.fillStyle = '#000';
+        ctx.font = 'bold 12px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        const domain = dataset.label;
+        const percentage = `${dataset.data[0].r.toFixed(0)}%`;
+
+        ctx.fillText(domain, x, y - 8);
+        ctx.fillText(percentage, x, y + 8);
+
+        ctx.restore();
+        });
+    }
+    };
+
+    const positions = [
+    { x: 50, y: 10 },
+    { x: 20, y: 20 },
+    { x: 80, y: 20 },
+    { x: 10, y: 50 },
+    { x: 90, y: 50 },
+    { x: 20, y: 80 },
+    { x: 80, y: 80 },
+    { x: 50, y: 90 }
+    ];
+    const chart = new Chart(ctx, {
+    type: 'bubble',
+    data: {
+        datasets: top4.map((item, index) => ({
+        label: item.domain,
+        data: [{ ...positions[index], r: item.percentage * scaleFactor }],
+        backgroundColor: randomColor(),
+        borderColor: 'rgba(0,0,0,0.1)',
+        borderWidth: 1
+        }))
+    },
+    options: {
+        scales: {
+        x: { display: false },
+        y: { display: false }
+        },
+        plugins: {
+        legend: { display: false },
+        tooltip: {
+            callbacks: {
+            label: ctx => `${ctx.dataset.label}: ${ctx.raw.r}%`
+            }
+        }
+        }
+    },
+    plugins: [bubbleLabelPlugin]
+    });
+}
 
 document.querySelectorAll('.clickable-brand-row').forEach(row => {
     row.addEventListener('click', () => {

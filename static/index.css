@@ -674,3 +674,22 @@ body {
     background-color: #ddd4ff;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
+
+#source-bubble-container {
+    position: relative;
+    height: 200px;
+}
+
+.source-bubble {
+    position: absolute;
+    border-radius: 50%;
+    background-color: rgba(100, 150, 255, 0.2);
+    text-align: center;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #ccc;
+    padding: 5px;
+}
