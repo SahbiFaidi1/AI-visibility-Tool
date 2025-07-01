@@ -1,3 +1,4 @@
 ctransformers==0.2.27
 numpy
 mistralai==0.4.2
+flask
