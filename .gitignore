@@ -1,19 +1,21 @@
-# Ignore Python virtual environment
-.venv/
-# Editor settings
-.vscode/
+# Secrets and local config
+.env
+config.yaml
 
-# Python artifacts
+# Data and exports
+data/
+exports/
+
+# Python
+.venv/
+venv/
 __pycache__/
 *.pyc
+*.egg-info/
+.pytest_cache/
 
-# Virtual environment
-venv/
-
-# Temporary scripts
-get-pip.py
-
-
-# System files
+# Editors / OS
+.vscode/
+.idea/
 .DS_Store
 Thumbs.db

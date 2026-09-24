@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Visibility</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-mark">
+      <span class="logo">AI</span>
+      <div>
+        <div class="title">AI Visibility</div>
+        <div class="subtitle" id="run-subtitle">Loading…</div>
+      </div>
+    </div>
+    <div class="controls">
+      <label>Run <select id="run-select"></select></label>
+      <label>Engine <select id="provider-select"><option value="">All engines</option></select></label>
+      <button id="refresh-btn" class="btn" title="Reload">Refresh</button>
+    </div>
+  </header>
+
+  <main id="app">
+    <section id="empty-state" class="card hidden">
+      <h2>No runs yet</h2>
+      <p>Configure <code>config.yaml</code>, add keys to <code>.env</code>, then run:</p>
+      <pre>aivis check
+aivis run --summary</pre>
+      <p>Or try the pipeline offline by enabling the <code>mock</code> provider.</p>
+    </section>
+
+    <section id="content" class="hidden">
+      <div class="kpis" id="kpis"></div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head">
+            <h2>Competitive ranking</h2>
+            <span class="muted" id="ranking-note"></span>
+          </div>
+          <div class="chart-box"><canvas id="ranking-chart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <h2>Visibility by engine</h2>
+            <span class="muted">% of answers mentioning each brand</span>
+          </div>
+          <div class="table-wrap"><table id="engine-table" class="table"></table></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2>All brands</h2>
+          <span class="muted">Branded prompts excluded. Position 1 = mentioned first. Sentiment 0–100.</span>
+        </div>
+        <div class="table-wrap"><table id="brand-table" class="table"></table></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2>Prompts</h2>
+          <span class="muted" id="matrix-note">Does each engine mention <b id="matrix-target"></b>? Click a cell to read the answer.</span>
+        </div>
+        <div class="table-wrap"><table id="matrix-table" class="table matrix"></table></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head">
+            <h2>Sources the engines rely on</h2>
+            <span class="muted">Domains cited or retrieved while answering</span>
+          </div>
+          <div class="table-wrap"><table id="sources-table" class="table"></table></div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <h2>Visibility over time</h2>
+            <span class="muted">Across all stored runs for this brand</span>
+          </div>
+          <div class="chart-box"><canvas id="trend-chart"></canvas></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h2>Engines in this run</h2></div>
+        <div class="table-wrap"><table id="provider-table" class="table"></table></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <button class="modal-close" id="modal-close" aria-label="Close">×</button>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

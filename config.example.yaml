@@ -1,0 +1,128 @@
+# AI Visibility Tracker configuration.
+# Copy to config.yaml, then edit the brand, competitors, prompts and providers.
+
+# The brand you are tracking. Aliases are matched as whole words, case-insensitive.
+# Domains are used to classify citations (is the AI citing your site or a competitor's?).
+brand:
+  name: Tesla
+  aliases: [Tesla Motors]
+  domains: [tesla.com]
+
+# Every competitor you want in the ranking. Same fields as brand.
+competitors:
+  - name: BMW
+    domains: [bmw.com]
+  - name: Mercedes-Benz
+    aliases: [Mercedes, Mercedes Benz]
+    domains: [mercedes-benz.com]
+  - name: Audi
+    domains: [audi.com]
+  - name: Toyota
+    domains: [toyota.com]
+  - name: Volkswagen
+    aliases: [VW]
+    domains: [vw.com, volkswagen.com]
+  - name: Hyundai
+    domains: [hyundai.com]
+  - name: Porsche
+    domains: [porsche.com]
+
+# Prompts are what a real buyer would ask an AI assistant. Categories are free text;
+# "discovery" and "comparison" are the ones that matter for share of voice.
+# Prompts that name your own brand ("branded") are tracked but excluded from the
+# competitive ranking, because you will always be mentioned.
+prompts:
+  - text: which electric car brands are the most reliable
+    category: discovery
+  - text: what are the best luxury car brands
+    category: discovery
+  - text: which car brands are leading in electric vehicles
+    category: discovery
+  - text: what car brands have the best technology features
+    category: discovery
+  - text: which car brands are considered premium
+    category: discovery
+  - text: which car brands have the best resale value
+    category: discovery
+  - text: what are the best electric SUVs to buy this year
+    category: discovery
+  - text: Tesla vs BMW electric cars, which is better
+    category: comparison
+  - text: is a Tesla worth buying compared to other EVs
+    category: branded
+
+# Each provider is one "AI search engine" column in the report. `type` picks the
+# adapter, `model` is passed straight through so you can swap models at any time.
+# Keys are read from the environment variable named in `api_key_env`
+# (defaults shown). Set `enabled: false` to keep a provider configured but skip it.
+providers:
+  - id: chatgpt
+    type: openai
+    model: gpt-5.5
+    web_search: true            # uses the Responses API web_search tool
+    # api_key_env: OPENAI_API_KEY
+
+  - id: claude
+    type: anthropic
+    model: claude-sonnet-5
+    web_search: true            # web_search_20250305 server tool
+    # api_key_env: ANTHROPIC_API_KEY
+
+  - id: gemini
+    type: gemini
+    model: gemini-2.5-flash
+    web_search: true            # Google Search grounding
+    # api_key_env: GEMINI_API_KEY
+
+  - id: perplexity
+    type: perplexity
+    preset: low                 # Perplexity Agent API; or set `model: openai/gpt-5` etc.
+    # api: chat                 # legacy Sonar chat completions (model: sonar)
+    # api_key_env: PERPLEXITY_API_KEY
+
+  - id: mistral
+    type: mistral
+    model: mistral-medium-latest
+    web_search: true            # Conversations API web_search connector
+    # api_key_env: MISTRAL_API_KEY
+
+  # Any OpenAI-compatible chat endpoint. Examples:
+  - id: grok
+    type: openai_compatible
+    enabled: false
+    base_url: https://api.x.ai/v1
+    api_key_env: XAI_API_KEY
+    model: grok-4
+
+  - id: deepseek
+    type: openai_compatible
+    enabled: false
+    base_url: https://api.deepseek.com
+    api_key_env: DEEPSEEK_API_KEY
+    model: deepseek-chat
+
+  # Offline mock that fabricates plausible answers. Handy for testing the pipeline
+  # and dashboard without spending a cent. Disable for real runs.
+  - id: mock
+    type: mock
+    enabled: false
+
+run:
+  repeats: 1                    # ask each prompt N times per provider (LLMs are non-deterministic)
+  concurrency: 4                # parallel requests overall
+  per_provider_concurrency: 2   # parallel requests per provider (rate limits)
+  timeout_seconds: 120
+  retries: 2
+  # Optional system prompt sent to every provider that supports one.
+  system_prompt: null
+  # Optional approximate user location for engines that support localisation (ISO country code).
+  country: null
+
+# Sentiment is judged by an LLM ("how does this answer talk about brand X?").
+# It costs one extra call per answer that mentions a tracked brand.
+sentiment:
+  enabled: true
+  provider: chatgpt             # any provider id above; must have a key. Set to null to skip.
+
+storage:
+  db: data/aivis.db
