@@ -1,2 +1,24 @@
-# Ignore Python virtual environment
-.venv/ 
+# Secrets and local config
+.env
+config.yaml
+
+# Data and exports
+data/
+exports/
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Claude Code local settings
+.claude/

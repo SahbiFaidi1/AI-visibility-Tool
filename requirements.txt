@@ -1,2 +1,14 @@
-ctransformers==0.2.27
-numpy==1.24.3 
+# Core
+flask>=3.1
+pyyaml>=6.0
+python-dotenv>=1.0
+
+# Provider SDKs (install only the ones you use, or all of them)
+openai>=3.0
+anthropic>=1.0
+google-genai>=2.0
+mistralai>=2.0
+perplexityai>=0.40
+
+# Dev
+pytest>=8
